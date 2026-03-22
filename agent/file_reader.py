@@ -28,7 +28,13 @@ class FileReader:
         if not cpy_dir.exists():
             logger.warning(f"No copybooks directory found at {cpy_dir}")
             return []
-        files = sorted(cpy_dir.glob("*.cpy")) + sorted(cpy_dir.glob("*.CPY"))
+        seen = set()
+        files = []
+        for f in sorted(cpy_dir.glob("*.cpy")) + sorted(cpy_dir.glob("*.CPY")):
+            if f.name.upper() not in seen:
+                seen.add(f.name.upper())
+                files.append(f)
+        files = sorted(files, key=lambda f: f.name.upper())
         logger.info(f"Found {len(files)} copybook(s) in {cpy_dir}")
         return files
 
@@ -38,7 +44,13 @@ class FileReader:
         if not cbl_dir.exists():
             logger.warning(f"No cobol directory found at {cbl_dir}")
             return []
-        files = sorted(cbl_dir.glob("*.cbl")) + sorted(cbl_dir.glob("*.CBL"))
+        seen = set()
+        files = []
+        for f in sorted(cbl_dir.glob("*.cbl")) + sorted(cbl_dir.glob("*.CBL")):
+            if f.name.upper() not in seen:
+                seen.add(f.name.upper())
+                files.append(f)
+        files = sorted(files, key=lambda f: f.name.upper())
         logger.info(f"Found {len(files)} COBOL file(s) in {cbl_dir}")
         return files
 
@@ -48,6 +60,30 @@ class FileReader:
         if not jcl_dir.exists():
             logger.warning(f"No jcl directory found at {jcl_dir}")
             return []
-        files = sorted(jcl_dir.glob("*.jcl")) + sorted(jcl_dir.glob("*.JCL"))
+        seen = set()
+        files = []
+        for f in sorted(jcl_dir.glob("*.jcl")) + sorted(jcl_dir.glob("*.JCL")):
+            if f.name.upper() not in seen:
+                seen.add(f.name.upper())
+                files.append(f)
+        files = sorted(files, key=lambda f: f.name.upper())
         logger.info(f"Found {len(files)} JCL file(s) in {jcl_dir}")
+        return files
+
+    def get_bms_files(self) -> list:
+        """Returns all .bms files sorted by name (from copybooks folder)."""
+        # BMS files are stored alongside copybooks
+        bms_dir = self.src / "copybooks"
+        if not bms_dir.exists():
+            logger.warning(f"No copybooks directory found at {bms_dir}")
+            return []
+        # Use case-insensitive deduplication — Windows globs both *.bms and *.BMS as same files
+        seen = set()
+        files = []
+        for f in sorted(bms_dir.glob("*.bms")) + sorted(bms_dir.glob("*.BMS")):
+            if f.name.upper() not in seen:
+                seen.add(f.name.upper())
+                files.append(f)
+        files = sorted(files, key=lambda f: f.name.upper())
+        logger.info(f"Found {len(files)} BMS file(s) in {bms_dir}")
         return files

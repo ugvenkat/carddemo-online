@@ -39,12 +39,12 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000001001";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "PU";
-        request.categoryCode = 5001;
+        request.typeCode = "PU";
+        request.categoryCode = "5001";
         request.source = "ONLINE";
         request.description = "Test Transaction";
-        request.amount = new BigDecimal("50.00");
-        request.merchantId = 123456789L;
+        request.amount = "50.00";
+        request.merchantId = "123456789";
         request.merchantName = "Test Merchant";
         request.merchantCity = "Boston";
         request.merchantZip = "02101";
@@ -68,8 +68,8 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "PU";
-        request.amount = new BigDecimal("100.00");
+        request.typeCode = "PU";
+        request.amount = "100.00";
 
         ResponseEntity<ApiResponse> response = controller.addTransaction(request);
         
@@ -81,8 +81,8 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000001001";
         request.cardNumber = "9999999999999999";
-        request.transactionType = "PU";
-        request.amount = new BigDecimal("100.00");
+        request.typeCode = "PU";
+        request.amount = "100.00";
 
         ResponseEntity<ApiResponse> response = controller.addTransaction(request);
         
@@ -94,8 +94,8 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000001001";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "PU";
-        request.amount = new BigDecimal("-50.00");
+        request.typeCode = "PU";
+        request.amount = "-50.00";
 
         ResponseEntity<ApiResponse> response = controller.addTransaction(request);
         
@@ -107,8 +107,8 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000001001";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "PU";
-        request.amount = BigDecimal.ZERO;
+        request.typeCode = "PU";
+        request.amount = "0.00";
 
         ResponseEntity<ApiResponse> response = controller.addTransaction(request);
         
@@ -120,12 +120,12 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000002002";
         request.cardNumber = "4222222222222222";
-        request.transactionType = "SA";
-        request.categoryCode = 5002;
+        request.typeCode = "SA";
+        request.categoryCode = "5002";
         request.source = "POS";
         request.description = "Sale Transaction";
-        request.amount = new BigDecimal("200.00");
-        request.merchantId = 987654321L;
+        request.amount = "200.00";
+        request.merchantId = "987654321";
         request.merchantName = "Sale Merchant";
         request.merchantCity = "Chicago";
         request.merchantZip = "60601";
@@ -140,8 +140,8 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "80000001001";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "PU";
-        request.amount = new BigDecimal("999999.99");
+        request.typeCode = "PU";
+        request.amount = "999999.99";
 
         ResponseEntity<ApiResponse> response = controller.addTransaction(request);
         
@@ -154,7 +154,7 @@ class TransactionAddControllerTest {
         
         assertNull(request.accountId);
         assertNull(request.cardNumber);
-        assertNull(request.transactionType);
+        assertNull(request.typeCode);
         assertNull(request.amount);
     }
 
@@ -163,23 +163,23 @@ class TransactionAddControllerTest {
         TransactionAddRequest request = new TransactionAddRequest();
         request.accountId = "12345678901";
         request.cardNumber = "4111111111111111";
-        request.transactionType = "CR";
-        request.categoryCode = 1001;
+        request.typeCode = "CR";
+        request.categoryCode = "1001";
         request.source = "WEB";
         request.description = "Credit Transaction";
-        request.amount = new BigDecimal("500.00");
-        request.merchantId = 555555555L;
+        request.amount = "500.00";
+        request.merchantId = "555555555";
         request.merchantName = "Credit Store";
         request.merchantCity = "Miami";
         request.merchantZip = "33101";
 
         assertEquals("12345678901", request.accountId);
         assertEquals("4111111111111111", request.cardNumber);
-        assertEquals("CR", request.transactionType);
+        assertEquals("CR", request.typeCode);
         assertEquals(1001, request.categoryCode);
         assertEquals("WEB", request.source);
         assertEquals("Credit Transaction", request.description);
-        assertEquals(new BigDecimal("500.00"), request.amount);
+        assertEquals("500.00", request.amount);
         assertEquals(555555555L, request.merchantId);
         assertEquals("Credit Store", request.merchantName);
         assertEquals("Miami", request.merchantCity);

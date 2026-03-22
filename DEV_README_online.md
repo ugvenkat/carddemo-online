@@ -4,13 +4,14 @@
 **Repo:** https://github.com/ugvenkat/carddemo-online  
 **Source:** https://github.com/aws-samples/aws-mainframe-modernization-carddemo (Apache 2.0)  
 **Author:** ugvenkat  
-**Last Updated:** March 2026
+**Last Updated:** March 22, 2026
 
 ---
 
 ## Table of Contents
 1. [Project Overview](#1-project-overview)
-2. [Architecture](#2-architecture)
+2. [Scope — What Is and Is Not Implemented](#scope--what-is-and-is-not-implemented)
+3. [Architecture](#3-architecture)
 3. [What Each Controller Does](#3-what-each-controller-does)
 4. [Repository Structure](#4-repository-structure)
 5. [Prerequisites](#5-prerequisites)
@@ -31,11 +32,40 @@ This project modernizes the **online (CICS)** portion of the AWS CardDemo mainfr
 |---|---|
 | CICS COBOL programs (`.cbl`) | Spring Boot REST API controllers |
 | COBOL copybooks (`.cpy`) | Java DTO classes |
-| BMS mapsets (`.bms`) | JSON request/response objects |
+| BMS mapsets (`.bms`) | React web UI pages (authentic 3270 terminal look) |
 | CICS COMMAREA | `CardDemoCommArea` session object |
 | CICS VSAM file I/O | In-memory `HashMap` simulation |
+| 3270 terminal screens | React + react-router-dom SPA |
 
-The result is a fully functional **Spring Boot REST API** running on port 8080 that mirrors all the business logic of the original CICS screens.
+The result is a fully functional **Spring Boot REST API** (port 8080) with a **React web frontend** (port 3000) that faithfully reproduces the original CICS screens with an authentic mainframe terminal look.
+
+---
+
+## Scope — What Is and Is Not Implemented
+
+The AWS CardDemo sample application includes **5 CICS programs**. This modernization covers all 5:
+
+| # | COBOL Program | Spring Boot Controller | React Page | Status |
+|---|---|---|---|---|
+| 1 | `COSGN00C` | `AuthController` | `LoginPage.jsx` | ✅ Implemented |
+| 2 | `COMEN01C` | `MenuController` | `MenuPage.jsx` | ✅ Implemented |
+| 3 | `COTRN00C` | `TransactionListController` | `TransactionListPage.jsx` | ✅ Implemented |
+| 4 | `COTRN01C` | `TransactionViewController` | `TransactionViewPage.jsx` | ✅ Implemented |
+| 5 | `COTRN02C` | `TransactionAddController` | `TransactionAddPage.jsx` | ✅ Implemented |
+
+The Main Menu shows 7 options. **Options 4 and 5 are fully functional**. The remaining options point to COBOL programs that are **not included in the AWS CardDemo sample source** and are therefore not implemented in this modernization:
+
+| Menu Option | COBOL Program | Status | Notes |
+|---|---|---|---|
+| 1. View Account | `COACTVWC` | ❌ Not in scope | Source not in AWS CardDemo sample |
+| 2. Update Account | `COACTUPC` | ❌ Not in scope | Source not in AWS CardDemo sample |
+| 3. View Statement | `COSTMTC` | ❌ Not in scope | Source not in AWS CardDemo sample |
+| 4. View Transaction | `COTRN01C` | ✅ Implemented | Full view with all fields |
+| 5. Transaction List | `COTRN00C` | ✅ Implemented | Paginated list, click to view |
+| 6. Credit/Debit Card | `COCRDLIC` | ❌ Not in scope | Source not in AWS CardDemo sample |
+| 7. Bill Payment | `COBIL00C` | ❌ Not in scope | Source not in AWS CardDemo sample |
+
+> **Note for future phases:** Options 1, 2, 3, 6, and 7 would be implemented by obtaining the corresponding COBOL source programs, adding them to `src/cobol/`, and running the agent again. The agent will automatically convert them to Spring Boot controllers and React pages.
 
 ---
 
@@ -250,6 +280,23 @@ carddemo-online/
 │   ├── dto/
 │   └── controllers/
 │
+├── converted-usingAgent/frontend/    ← REACT WEB FRONTEND
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── LoginPage.jsx             ← COSGN00.bms
+│   │   │   ├── MenuPage.jsx              ← COMEN01.bms
+│   │   │   ├── TransactionListPage.jsx   ← COTRN00.bms
+│   │   │   ├── TransactionViewPage.jsx   ← COTRN01.bms
+│   │   │   └── TransactionAddPage.jsx    ← COTRN02.bms
+│   │   ├── services/
+│   │   │   └── api.js                    ← REST API calls
+│   │   ├── App.jsx                       ← Routing + ProtectedRoute
+│   │   ├── index.js                      ← React entry point
+│   │   └── index.css                     ← Terminal theme (3270 colors)
+│   ├── public/
+│   │   └── index.html
+│   └── package.json
+│
 ├── agent/                            ← AGENTIC AI CONVERTER
 │   ├── agent.py                      ← Main orchestrator
 │   ├── converter.py                  ← Claude API prompts
@@ -298,9 +345,9 @@ cd carddemo-online
 mvn compile
 ```
 
-### Step 3 — Run the Application
+### Step 3 — Run the Spring Boot Backend
 ```cmd
-mvn spring-boot:run
+mvn spring-boot:run -Dmaven.test.skip=true
 ```
 
 Wait for:
@@ -309,7 +356,20 @@ Started CardDemoApplication in X.XXX seconds
 Tomcat started on port(s): 8080
 ```
 
-### Step 4 — Test Login (new PowerShell window)
+### Step 4 — Run the React Frontend (new window)
+```cmd
+cd converted-usingAgentrontend
+npm install
+npm start
+```
+
+Browser opens automatically at `http://localhost:3000`
+
+Login with:
+- **User ID:** `USER0001` / **Password:** `USER1234` (Regular user)
+- **User ID:** `ADMIN001` / **Password:** `ADMIN123` (Admin user)
+
+### Step 5 — Test REST API directly (optional)
 ```powershell
 $body = '{"userId":"USER0001","password":"USER1234"}'
 Invoke-RestMethod -Uri "http://localhost:8080/api/auth/login" -Method POST -ContentType "application/json" -Body $body

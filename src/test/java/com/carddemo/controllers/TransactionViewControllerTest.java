@@ -128,13 +128,13 @@ class TransactionViewControllerTest {
     @Test
     void testUserSecurityDataFieldAssignment() {
         UserSecurityData user = new UserSecurityData();
-        user.secUserId = "admin";
-        user.secUserPwd = "password123";
-        user.secUserType = "A";
+        user.secUsrId = "admin";
+        user.secUsrPwd = "password123";
+        user.secUsrType = "A";
 
-        assertEquals("admin", user.secUserId);
-        assertEquals("password123", user.secUserPwd);
-        assertEquals("A", user.secUserType);
+        assertEquals("admin", user.secUsrId);
+        assertEquals("password123", user.secUsrPwd);
+        assertEquals("A", user.secUsrType);
     }
 
     @Test

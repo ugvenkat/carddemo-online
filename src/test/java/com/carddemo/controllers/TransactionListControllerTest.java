@@ -36,7 +36,7 @@ public class TransactionListControllerTest {
         ApiResponse apiResponse = response.getBody();
         assertNotNull(apiResponse);
         assertTrue(apiResponse.success);
-        assertNull(apiResponse.errorMessage);
+        assertNull(apiResponse.message);
         assertNotNull(apiResponse.data);
         assertNotNull(apiResponse.commArea);
     }
@@ -48,7 +48,7 @@ public class TransactionListControllerTest {
         ApiResponse apiResponse = response.getBody();
         assertNotNull(apiResponse);
         
-        Map<String, Object> data = apiResponse.data;
+        Map<?,?> data = (Map<?,?>) apiResponse.data;
         assertNotNull(data);
         assertTrue(data.containsKey("transactions"));
         assertTrue(data.containsKey("pageNum"));
@@ -86,7 +86,7 @@ public class TransactionListControllerTest {
         ApiResponse apiResponse = response.getBody();
         assertNotNull(apiResponse);
         
-        Map<String, Object> data = apiResponse.data;
+        Map<?,?> data = (Map<?,?>) apiResponse.data;
         assertNotNull(data);
         assertTrue(data.containsKey("firstTranId") || data.containsKey("lastTranId"));
     }

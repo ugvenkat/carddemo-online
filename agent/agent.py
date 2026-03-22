@@ -154,6 +154,115 @@ def run_agent(src_dir: str, out_dir: str, clean: bool = False):
 
         time.sleep(RATE_LIMIT_DELAY)
 
+    # ------------------------------------------------------------------
+    # Phase 3: BMS Mapsets -> React Components
+    # ------------------------------------------------------------------
+    logger.info("=" * 60)
+    logger.info("PHASE 3 - BMS MAPSETS -> REACT COMPONENTS")
+    logger.info("=" * 60)
+
+    bms_files = reader.get_bms_files()
+    logger.info(f"Found {len(bms_files)} BMS file(s): {[f.name for f in bms_files]}")
+
+    bms_endpoint_map = {
+        "COSGN00": ("POST /api/auth/login", "COSGN00C"),
+        "COMEN01": ("GET/POST /api/menu", "COMEN01C"),
+        "COTRN00": ("GET /api/transactions", "COTRN00C"),
+        "COTRN01": ("GET /api/transactions/:id", "COTRN01C"),
+        "COTRN02": ("POST /api/transactions", "COTRN02C"),
+    }
+    component_name_map = {
+        "COSGN00": "LoginPage",
+        "COMEN01": "MenuPage",
+        "COTRN00": "TransactionListPage",
+        "COTRN01": "TransactionViewPage",
+        "COTRN02": "TransactionAddPage",
+    }
+
+    for bms_file in bms_files:
+        stem = bms_file.stem.upper()
+        component_name = component_name_map.get(stem, stem.title() + "Page")
+        out_path = Path(out_dir) / "frontend" / "src" / "pages" / f"{component_name}.jsx"
+
+        if out_path.exists():
+            logger.info(f"Skipping {bms_file.name} - already converted")
+            continue
+
+        logger.info(f"Converting BMS: {bms_file.name} -> {component_name}.jsx")
+        bms_source = bms_file.read_text(encoding="utf-8", errors="replace")
+        api_endpoint, cobol_name = bms_endpoint_map.get(stem, ("", ""))
+
+        cobol_source = ""
+        cobol_file = Path(src_dir) / "cobol" / f"{cobol_name}.cbl"
+        if cobol_file.exists():
+            cobol_source = cobol_file.read_text(encoding="utf-8", errors="replace")
+
+        react_component = converter.convert_bms_to_react(
+            bms_file.name, bms_source, api_endpoint, cobol_source
+        )
+        if react_component:
+            writer.write_react_page(component_name, react_component)
+            logger.info(f"  -> {component_name}.jsx written")
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate api.js
+    if not (Path(out_dir) / "frontend" / "src" / "services" / "api.js").exists():
+        logger.info("Generating api.js...")
+        api_js = converter.generate_api_service()
+        if api_js:
+            writer.write_react_service("api", api_js)
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate App.jsx
+    if not (Path(out_dir) / "frontend" / "App.jsx").exists():
+        logger.info("Generating App.jsx...")
+        app_jsx = converter.generate_app_jsx()
+        if app_jsx:
+            writer.write_react_app(app_jsx)
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate CorsConfig.java for Spring Boot CORS
+    cors_path = Path(out_dir) / "java" / "CorsConfig.java"
+    if not cors_path.exists():
+        logger.info("Generating CorsConfig.java for CORS support...")
+        cors_config = converter.generate_cors_config()
+        if cors_config:
+            writer.write_cors_config(cors_config)
+            logger.info("  -> CorsConfig.java written")
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate package.json
+    if not (Path(out_dir) / "frontend" / "package.json").exists():
+        logger.info("Generating package.json...")
+        pkg_json = converter.generate_package_json()
+        if pkg_json:
+            writer.write_react_package_json(pkg_json)
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate index.js entry point
+    if not (Path(out_dir) / "frontend" / "src" / "index.js").exists():
+        logger.info("Generating src/index.js entry point...")
+        index_js = converter.generate_index_js()
+        if index_js:
+            writer.write_react_index_js(index_js)
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate public/index.html
+    if not (Path(out_dir) / "frontend" / "public" / "index.html").exists():
+        logger.info("Generating public/index.html...")
+        index_html = converter.generate_index_html()
+        if index_html:
+            writer.write_react_index_html(index_html)
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Generate src/index.css global styles
+    if not (Path(out_dir) / "frontend" / "src" / "index.css").exists():
+        logger.info("Generating src/index.css terminal theme...")
+        index_css = converter.generate_index_css()
+        if index_css:
+            writer.write_react_index_css(index_css)
+        time.sleep(RATE_LIMIT_DELAY)
+
     logger.info("=" * 60)
     logger.info("AGENT COMPLETED SUCCESSFULLY")
     logger.info(f"Output written to: {out_dir}")

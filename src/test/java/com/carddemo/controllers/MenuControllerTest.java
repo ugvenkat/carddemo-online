@@ -144,7 +144,6 @@ public class MenuControllerTest {
     void testMenuResponseWithErrorMessage() {
         MenuResponse response = new MenuResponse();
         response.errorMessage = "Invalid key pressed. Please use Enter or PF3.";
-
         Assertions.assertEquals("Invalid key pressed. Please use Enter or PF3.", response.errorMessage);
     }
 
