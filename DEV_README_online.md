@@ -364,22 +364,7 @@ copy /Y converted-usingAgent\tests\java\dto\*.java         src\test\java\com\car
 copy /Y converted-usingAgent\tests\java\controllers\*.java src\test\java\com\carddemo\controllers\
 ```
 
-### Step 6 — Add Package Declarations
-```cmd
-python add_packages.py
-```
-
-### Step 7 — Add DTO Imports to Controllers
-```cmd
-python fix_imports.py
-```
-
-### Step 8 — Fix Test Imports
-```cmd
-python fix_test_imports.py
-```
-
-### Step 9 — Build
+### Step 6 — Build
 ```cmd
 mvn compile
 ```
@@ -563,12 +548,8 @@ The original COBOL `TRAN-TYPE-CD` is `PIC X(02)` (alphanumeric).
 **Fix:** Add credits at https://console.anthropic.com/settings/billing
 
 ### After running agent — package declarations missing
-**Fix:** Always run these scripts after copying agent output to Maven structure:
-```cmd
-python add_packages.py
-python fix_imports.py
-python fix_test_imports.py
-```
+**Fix:** Package declarations are now added automatically by the agent.
+If you see this error, ensure you are using the latest converter.py from the agent/ folder.
 
 ---
 

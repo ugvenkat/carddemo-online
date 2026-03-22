@@ -44,28 +44,38 @@ class FileWriter:
             d.mkdir(parents=True, exist_ok=True)
         logger.info(f"Output structure created at: {self.out.resolve()}")
 
+    # Package mappings for each output directory
+    PACKAGE_MAP = {
+        "dto":         "com.carddemo.dto",
+        "controllers": "com.carddemo.controllers",
+    }
+
     def write_java_record(self, class_name: str, content: str):
         """Writes a Java DTO class (from copybook) to java/dto/"""
         path = self.out / "java" / "dto" / f"{class_name}.java"
-        self._write(path, content)
+        self._write(path, content, "com.carddemo.dto")
 
     def write_java_service(self, class_name: str, content: str):
         """Writes a Spring Boot controller (from COBOL) to java/controllers/"""
         path = self.out / "java" / "controllers" / f"{class_name}.java"
-        self._write(path, content)
+        self._write(path, content, "com.carddemo.controllers")
 
     def write_java_test_record(self, class_name: str, content: str):
         """Writes a JUnit test for a DTO class to tests/java/dto/"""
         path = self.out / "tests" / "java" / "dto" / f"{class_name}.java"
-        self._write(path, content)
+        self._write(path, content, "com.carddemo.dto")
 
     def write_java_test_service(self, class_name: str, content: str):
         """Writes a JUnit test for a controller to tests/java/controllers/"""
         path = self.out / "tests" / "java" / "controllers" / f"{class_name}.java"
-        self._write(path, content)
+        self._write(path, content, "com.carddemo.controllers")
 
-    def _write(self, path: Path, content: str):
+    def _write(self, path: Path, content: str, package: str = None):
         header = self._build_header(path)
+        # Add package declaration automatically if not already present
+        if package and not content.lstrip().startswith("package "):
+            content = "package " + package + ";\n\n" + content
+            logger.info("  Added package " + package + " to " + path.name)
         full_content = header + "\n" + content
         path.write_text(full_content, encoding="utf-8")
         file_str = str(path)
