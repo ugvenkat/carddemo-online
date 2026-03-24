@@ -1,0 +1,98 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #000033;
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.screen {
+  min-height: 100vh;
+  padding: 8px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.title {
+  color: #ffff00;
+}
+
+.label {
+  color: #00ffff;
+}
+
+.display-field {
+  color: #4488ff;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #00ff00;
+  color: #00ff00;
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+.terminal-input:focus {
+  border-color: white;
+}
+
+.error-msg {
+  color: #ff0000;
+  font-weight: bold;
+  min-height: 1.2em;
+}
+
+.fkey-bar {
+  color: #ffff00;
+  border-top: 1px solid #333;
+  margin-top: 8px;
+  padding-top: 4px;
+}
+
+.btn {
+  background: #000033;
+  border: 1px solid #4488ff;
+  color: #4488ff;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 2px 8px;
+  margin: 0 4px;
+}
+
+.btn:hover {
+  background: #001166;
+}
+
+.tran-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tran-row {
+  cursor: pointer;
+}
+
+.tran-row:hover {
+  background: #001144;
+}
+
+.tran-cell {
+  padding: 1px 4px;
+  color: #4488ff;
+}
+
+.sel-cell {
+  color: #00ff00;
+}
